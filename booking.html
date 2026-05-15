@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Reservation Confirmed</title>
+
+<style>
+body{
+font-family:Arial;
+background:linear-gradient(120deg,#0f2027,#203a43,#2c5364);
+color:white;
+text-align:center;
+margin:0;
+}
+
+.box{
+background:rgba(255,255,255,0.2);
+backdrop-filter:blur(12px);
+border:1px solid rgba(255,255,255,0.3);
+width:400px;
+margin:auto;
+margin-top:80px;
+padding:30px;
+border-radius:12px;
+box-shadow:0 0 20px rgba(0,0,0,0.5);
+animation:fadeIn 0.8s ease;
+}
+
+@keyframes fadeIn{
+from{opacity:0; transform:translateY(20px);}
+to{opacity:1; transform:translateY(0);}
+}
+
+h1{
+color:#2ecc71;
+margin-bottom:10px;
+}
+
+.details{
+margin-top:20px;
+text-align:left;
+padding:10px;
+}
+
+.details p{
+margin:10px 0;
+font-size:16px;
+}
+
+.status{
+margin-top:10px;
+font-size:14px;
+color:#ffd700;
+}
+
+button{
+margin-top:20px;
+background:#27ae60;
+border:none;
+padding:12px 25px;
+border-radius:6px;
+color:white;
+font-size:16px;
+cursor:pointer;
+transition:0.3s;
+}
+
+button:hover{
+background:#2ecc71;
+}
+
+.error{
+color:#ff4d4d;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="box">
+
+<h1>Reservation Confirmed 🎉</h1>
+
+<div class="details">
+<p id="table"></p>
+<p id="name"></p>
+<p id="date"></p>
+<p id="time"></p>
+</div>
+
+<p id="msg" class="status"></p>
+
+<a href="menu.html">
+<button>Order Food 🍽</button>
+</a>
+
+</div>
+
+<script>
+let params = new URLSearchParams(window.location.search);
+let table = params.get("table");
+if(!table){
+table = localStorage.getItem("lastTable");
+}else{
+localStorage.setItem("lastTable", table);
+}
+if(!table){
+document.getElementById("msg").innerHTML="❌ No booking found";
+document.getElementById("msg").className="error";
+}else{
+
+document.getElementById("msg").innerHTML="Loading booking details...";
+fetch("/HotelTableReservation/GetBookingServlet?table="+table)
+
+.then(res=>{
+if(!res.ok){
+throw new Error("Server error");
+}
+return res.json();
+})
+
+.then(data=>{
+
+if(!data || !data.table){
+throw new Error("No data found");
+}
+document.getElementById("table").innerHTML = "Table: " + data.table;
+document.getElementById("name").innerHTML  = "Name: " + data.name;
+document.getElementById("date").innerHTML  = "Date: " + data.date;
+document.getElementById("time").innerHTML  = "Time: " + data.time;
+
+document.getElementById("msg").innerHTML="✅ Booking Loaded";
+
+})
+
+.catch(()=>{
+document.getElementById("msg").innerHTML="⚠ Failed to load booking";
+document.getElementById("msg").className="error";
+
+// clear fields
+document.getElementById("table").innerHTML="";
+document.getElementById("name").innerHTML="";
+document.getElementById("date").innerHTML="";
+document.getElementById("time").innerHTML="";
+});
+
+}
+
+</script>
+
+</body>
+</html>

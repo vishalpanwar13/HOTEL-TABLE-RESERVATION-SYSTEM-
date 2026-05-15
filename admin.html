@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Admin Dashboard</title>
+
+<style>
+body{
+font-family:Arial;
+background:#141e30;
+color:white;
+text-align:center;
+}
+
+.login{ margin-top:100px; }
+
+input{
+padding:10px;
+margin:10px;
+border:none;
+border-radius:5px;
+}
+
+button{
+padding:10px 20px;
+background:#27ae60;
+color:white;
+border:none;
+border-radius:5px;
+cursor:pointer;
+}
+
+table{
+margin:auto;
+margin-top:40px;
+border-collapse:collapse;
+width:90%;
+}
+
+th,td{
+border:1px solid white;
+padding:10px;
+}
+
+th{ background:#27ae60; }
+</style>
+
+</head>
+
+<body>
+
+<!-- LOGIN -->
+<div id="login" class="login">
+<h2>Admin Login</h2>
+
+<input type="text" id="user" placeholder="Enter ID"><br>
+<input type="password" id="pass" placeholder="Enter Password"><br>
+
+<button onclick="login()">Login</button>
+
+<p id="error" style="color:red;"></p>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard" style="display:none;">
+
+<h1>Admin Dashboard</h1>
+<h3>All Table Bookings</h3>
+
+<table>
+<tr>
+<th>Table</th>
+<th>Date</th>
+<th>Time</th>
+<th>Name</th>
+<th>Guests</th>
+<th>Food</th>
+<th>Status</th>
+<th>Payment</th> <!-- 🔥 NEW -->
+</tr>
+
+<tbody id="data"></tbody>
+</table>
+
+</div>
+
+<script>
+
+// LOGIN
+function login(){
+let id=document.getElementById("user").value;
+let pass=document.getElementById("pass").value;
+
+if(id==="admin" && pass==="1234"){
+document.getElementById("login").style.display="none";
+document.getElementById("dashboard").style.display="block";
+loadData();
+}else{
+document.getElementById("error").innerHTML="Wrong ID or Password";
+}
+}
+
+// FETCH DATA
+function loadData(){
+
+fetch("/HotelTableReservation/ViewBookingsServlet")
+.then(res=>{
+if(!res.ok){
+throw new Error("Server error");
+}
+return res.json();
+})
+.then(data=>{
+
+let tbody=document.getElementById("data");
+tbody.innerHTML="";
+
+data.forEach(row=>{
+
+let table = row.table || "N/A";
+let food = row.food && row.food !== "" ? row.food : "Not Ordered";
+let status = row.status && row.status !== "" ? row.status : "Pending";
+let payment = row.payment ? "₹" + row.payment : "₹0";
+
+// 🎯 UI FIX
+let displayStatus = status === "Ordered" ? "Ordered" : "Pending";
+
+let tr=`<tr>
+<td>${table}</td>
+<td>${row.date}</td>
+<td>${row.time}</td>
+<td>${row.name}</td>
+<td>${row.guests}</td>
+<td>${food}</td>
+<td>${displayStatus}</td>
+<td>${payment}</td> <!-- 🔥 SHOW -->
+</tr>`;
+
+tbody.innerHTML += tr;
+
+});
+
+})
+.catch(err=>{
+console.error(err);
+alert("Error loading data ❌");
+});
+
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Bill Payment</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f4f4f4;
+text-align:center;
+margin:0;
+padding-top:80px;
+}
+
+.billBox{
+width:500px;
+margin:auto;
+background:white;
+padding:30px;
+border-radius:10px;
+box-shadow:0 0 10px rgba(0,0,0,0.2);
+}
+
+h1{
+margin-bottom:30px;
+}
+
+h3{
+margin:20px;
+}
+
+.paymentMethods{
+margin-top:30px;
+text-align:left;
+padding-left:120px;
+}
+
+.paymentMethods label{
+display:block;
+margin:15px;
+font-size:18px;
+cursor:pointer;
+}
+
+input[type=text]{
+padding:10px;
+width:250px;
+margin-top:10px;
+border:1px solid gray;
+border-radius:5px;
+}
+
+button{
+margin-top:30px;
+padding:12px 25px;
+background:#27ae60;
+color:white;
+border:none;
+border-radius:5px;
+cursor:pointer;
+font-size:16px;
+}
+
+button:hover{
+background:#219150;
+}
+
+#upiBox,#cardBox{
+display:none;
+margin-top:15px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="billBox">
+
+<h1>Bill Payment</h1>
+
+<h3 id="table"></h3>
+
+<h3 id="food"></h3>
+
+<h3 id="amount"></h3>
+
+<div class="paymentMethods">
+
+<h3>Select Payment Method</h3>
+
+<label>
+<input type="radio" name="pay" value="UPI" onchange="showFields()">
+UPI
+</label>
+
+<div id="upiBox">
+<input type="text" id="upi" placeholder="Enter UPI ID">
+</div>
+
+<label>
+<input type="radio" name="pay" value="Card" onchange="showFields()">
+Debit / Credit Card
+</label>
+
+<div id="cardBox">
+<input type="text" id="card" placeholder="Enter Card Number">
+</div>
+
+<label>
+<input type="radio" name="pay" value="Cash" onchange="showFields()">
+Cash
+</label>
+
+</div>
+
+<button onclick="payNow()">
+Confirm Payment
+</button>
+
+</div>
+
+<script>
+
+let table = localStorage.getItem("lastTable");
+
+if(!table){
+
+alert("No Table Found ❌");
+
+window.location.href="index.html";
+
+}
+
+document.getElementById("table").innerHTML =
+"Table: " + table;
+
+
+// FETCH ORDER
+fetch("/HotelTableReservation/GetOrderServlet?table=" + table)
+
+.then(res => res.json())
+
+.then(data => {
+
+document.getElementById("food").innerHTML =
+"Food: " + data.food;
+
+document.getElementById("amount").innerHTML =
+"Total: ₹" + data.payment;
+
+})
+
+.catch(err => {
+
+console.log(err);
+
+alert("Failed to Load Bill ❌");
+
+});
+
+
+// SHOW INPUTS
+function showFields(){
+
+let method =
+document.querySelector('input[name="pay"]:checked').value;
+
+document.getElementById("upiBox").style.display="none";
+document.getElementById("cardBox").style.display="none";
+
+if(method==="UPI"){
+
+document.getElementById("upiBox").style.display="block";
+
+}
+
+if(method==="Card"){
+
+document.getElementById("cardBox").style.display="block";
+
+}
+
+}
+
+
+// PAYMENT
+function payNow(){
+
+let selected =
+document.querySelector('input[name="pay"]:checked');
+
+if(!selected){
+
+alert("Select Payment Method ❌");
+
+return;
+
+}
+
+let method = selected.value;
+
+
+// UPI VALIDATION
+if(method==="UPI"){
+
+let upi =
+document.getElementById("upi").value;
+
+if(upi===""){
+
+alert("Enter UPI ID ❌");
+
+return;
+
+}
+
+}
+
+
+// CARD VALIDATION
+if(method==="Card"){
+
+let card =
+document.getElementById("card").value;
+
+if(card===""){
+
+alert("Enter Card Number ❌");
+
+return;
+
+}
+
+}
+
+
+let amount =
+document.getElementById("amount")
+.innerText
+.replace("Total: ₹","");
+
+
+// SEND TO SERVLET
+fetch("/HotelTableReservation/PaymentServlet",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/x-www-form-urlencoded"
+},
+
+body:
+`table=${table}&amount=${amount}&method=${method}`
+
+})
+
+.then(res => {
+
+if(!res.ok){
+
+throw new Error("Payment Failed");
+
+}
+
+return res.text();
+
+})
+
+.then(data => {
+
+alert(data);
+
+window.location.href="index.html";
+
+})
+
+.catch(err => {
+
+console.log(err);
+
+alert("Payment Failed ❌");
+
+});
+
+}
+
+</script>
+
+</body>
+</html>

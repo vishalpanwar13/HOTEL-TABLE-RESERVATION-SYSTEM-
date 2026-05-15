@@ -1,0 +1,67 @@
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee 
+         http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+         version="3.1">
+
+    <!-- Book Table -->
+    <servlet>
+    <servlet-name>BookTableServlet</servlet-name>
+    <servlet-class>BookTableServlet</servlet-class>
+</servlet>
+
+<servlet-mapping>
+    <servlet-name>BookTableServlet</servlet-name>
+    <url-pattern>/BookTableServlet</url-pattern>
+</servlet-mapping>
+
+    <!-- View Bookings -->
+    <servlet>
+        <servlet-name>ViewBookingsServlet</servlet-name>
+        <servlet-class>ViewBookingsServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ViewBookingsServlet</servlet-name>
+        <url-pattern>/ViewBookingsServlet</url-pattern>
+    </servlet-mapping>
+
+    <!-- Get Booking -->
+    <servlet>
+        <servlet-name>GetBookingServlet</servlet-name>
+        <servlet-class>GetBookingServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetBookingServlet</servlet-name>
+        <url-pattern>/GetBookingServlet</url-pattern>
+    </servlet-mapping>
+
+    <!-- Food Servlet -->
+    <servlet>
+        <servlet-name>FoodServlet</servlet-name>
+        <servlet-class>FoodServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>FoodServlet</servlet-name>
+        <url-pattern>/FoodServlet</url-pattern>
+    </servlet-mapping>
+
+    <!-- Payment Servlet -->
+    <servlet>
+        <servlet-name>PaymentServlet</servlet-name>
+        <servlet-class>PaymentServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>PaymentServlet</servlet-name>
+        <url-pattern>/PaymentServlet</url-pattern>
+    </servlet-mapping>
+    <servlet>
+    <servlet-name>GetOrderServlet</servlet-name>
+    <servlet-class>GetOrderServlet</servlet-class>
+</servlet>
+
+<servlet-mapping>
+    <servlet-name>GetOrderServlet</servlet-name>
+    <url-pattern>/GetOrderServlet</url-pattern>
+</servlet-mapping>
+
+</web-app>

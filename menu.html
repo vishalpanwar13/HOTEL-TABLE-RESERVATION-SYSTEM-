@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>BCA Cafe Menu</title>
+
+<style>
+body{
+font-family:Arial;
+background:linear-gradient(135deg,#141e30,#243b55);
+color:white;
+text-align:center;
+margin:0;
+}
+
+h1{ margin-top:20px; }
+
+.section{
+margin:40px auto;
+width:1100px;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:20px;
+}
+
+.card{
+background:rgba(255,255,255,0.15);
+padding:15px;
+border-radius:12px;
+}
+
+.card img{
+width:100%;
+height:150px;
+object-fit:cover;
+border-radius:10px;
+margin-bottom:10px;
+}
+
+button{
+background:#27ae60;
+color:white;
+padding:12px 25px;
+border:none;
+border-radius:5px;
+cursor:pointer;
+}
+
+.qty{
+width:60px;
+padding:5px;
+}
+</style>
+
+</head>
+
+<body>
+
+<h1>🍽️ Full Menu</h1>
+
+<div class="section">
+<div class="grid">
+
+<!-- FOOD ITEMS -->
+
+<div class="card" data-name="Paneer" data-price="250">
+<img src="images/paneer.jpg">
+Paneer Butter Masala ₹250<br>
+<input class="qty" type="number" value="0">
+</div>
+
+<div class="card" data-name="Palak Paneer" data-price="230">
+<img src="images/palakpaneer.jpg">
+Palak Paneer ₹230<br>
+<input class="qty" type="number" value="0">
+</div>
+
+<div class="card" data-name="Dal" data-price="150">
+<img src="images/dal.jpg">
+Dal ₹150<br>
+<input class="qty" type="number" value="0">
+</div>
+
+<div class="card" data-name="Butter Chicken" data-price="300">
+<img src="images/butterchicken.jpg">
+Butter Chicken ₹300<br>
+<input class="qty" type="number" value="0">
+</div>
+
+<div class="card" data-name="Chicken Curry" data-price="280">
+<img src="images/chickencurry.jpg">
+Chicken Curry ₹280<br>
+<input class="qty" type="number" value="0">
+</div>
+
+<div class="card" data-name="Tandoori" data-price="320">
+<img src="images/tandoori.jpg">
+Tandoori ₹320<br>
+<input class="qty" type="number" value="0">
+</div>
+
+<div class="card" data-name="Veg Burger" data-price="120">
+<img src="images/burger.jpg">
+Veg Burger ₹120<br>
+<input class="qty" type="number" value="0">
+</div>
+
+<div class="card" data-name="Chicken Burger" data-price="160">
+<img src="images/chickenburger.jpg">
+Chicken Burger ₹160<br>
+<input class="qty" type="number" value="0">
+</div>
+
+<div class="card" data-name="Pizza" data-price="280">
+<img src="images/pizza.jpg">
+Pizza ₹280<br>
+<input class="qty" type="number" value="0">
+</div>
+
+<div class="card" data-name="Pasta" data-price="260">
+<img src="images/pasta.jpg">
+Pasta ₹260<br>
+<input class="qty" type="number" value="0">
+</div>
+
+<div class="card" data-name="Sandwich" data-price="140">
+<img src="images/sandwich.jpg">
+Sandwich ₹140<br>
+<input class="qty" type="number" value="0">
+</div>
+
+<div class="card" data-name="Biryani" data-price="220">
+<img src="images/biryani.jpg">
+Biryani ₹220<br>
+<input class="qty" type="number" value="0">
+</div>
+
+<div class="card" data-name="Chicken Biryani" data-price="260">
+<img src="images/chickenbiryani.jpg">
+Chicken Biryani ₹260<br>
+<input class="qty" type="number" value="0">
+</div>
+
+<!-- DESSERTS -->
+
+<div class="card" data-name="Ice Cream" data-price="150">
+<img src="images/icecream.jpg">
+Ice Cream ₹150<br>
+<input class="qty" type="number" value="0">
+</div>
+
+<div class="card" data-name="Cake" data-price="180">
+<img src="images/cake.jpg">
+Cake ₹180<br>
+<input class="qty" type="number" value="0">
+</div>
+
+<div class="card" data-name="Brownie" data-price="200">
+<img src="images/brownie.jpg">
+Brownie ₹200<br>
+<input class="qty" type="number" value="0">
+</div>
+
+<!-- DRINKS -->
+
+<div class="card" data-name="Cold Coffee" data-price="120">
+<img src="images/coffee.jpg">
+Cold Coffee ₹120<br>
+<input class="qty" type="number" value="0">
+</div>
+
+<div class="card" data-name="Lassi" data-price="90">
+<img src="images/lassi.jpg">
+Lassi ₹90<br>
+<input class="qty" type="number" value="0">
+</div>
+
+<div class="card" data-name="Mojito" data-price="140">
+<img src="images/mojito.jpg">
+Mojito ₹140<br>
+<input class="qty" type="number" value="0">
+</div>
+
+<div class="card" data-name="Milkshake" data-price="150">
+<img src="images/milkshake.jpg">
+Milkshake ₹150<br>
+<input class="qty" type="number" value="0">
+</div>
+
+</div>
+</div>
+
+<br>
+<button onclick="submitOrder()">Confirm Order</button>
+
+<script>
+function submitOrder(){
+
+let total=0;
+let items=[];
+
+document.querySelectorAll(".card").forEach(card=>{
+
+let qty=parseInt(card.querySelector("input").value) || 0;
+
+if(qty>0){
+let name=card.dataset.name;
+let price=parseInt(card.dataset.price);
+
+items.push(name+" x"+qty);
+total+=price*qty;
+}
+});
+
+if(items.length===0){
+alert("Select items ❌");
+return;
+}
+
+let table=localStorage.getItem("lastTable");
+
+if(!table){
+alert("Table not found ❌");
+return;
+}
+
+fetch("/HotelTableReservation/FoodServlet",{
+method:"POST",
+headers:{
+"Content-Type":"application/x-www-form-urlencoded"
+},
+body:`table=${table}&food=${items.join(", ")}&amount=${total}`
+})
+.then(res=>res.text())
+.then(()=>{
+alert("Order Placed ✅");
+window.location.href="bill.html";
+})
+.catch(()=>{
+alert("Error ❌");
+});
+
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>BCA Cafe Reservation</title>
+
+<style>
+body{
+margin:0;
+font-family:Arial;
+text-align:center;
+color:white;
+background:#243B55;
+}
+
+.floor{
+width:900px;
+margin:auto;
+margin-top:30px;
+display:grid;
+grid-template-columns:repeat(6,1fr);
+gap:10px;
+}
+
+.table{
+padding:15px;
+border-radius:8px;
+background:#27ae60;
+cursor:pointer;
+transition:0.3s;
+}
+
+.table:hover{
+transform:scale(1.05);
+}
+
+.booked{
+background:#e74c3c;
+cursor:not-allowed;
+}
+
+.selected{
+border:3px solid yellow;
+}
+
+.formBox{
+background:#34495e;
+width:320px;
+margin:auto;
+margin-top:20px;
+padding:20px;
+border-radius:10px;
+}
+
+button{
+padding:10px;
+background:#2ecc71;
+border:none;
+color:white;
+cursor:pointer;
+}
+
+input{
+padding:8px;
+margin:5px;
+width:80%;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Table Reservation</h1>
+
+<form onsubmit="submitForm(event)">
+
+<div class="formBox">
+
+Name<br> 
+<input type="text" id="name" required><br>
+
+Guests<br> 
+<input type="number" id="guests" required onchange="filterTables()"><br>
+
+<input type="hidden" id="tableInput">
+
+</div>
+
+<h3>Select Table</h3>
+<div class="floor" id="tables"></div>
+
+<div id="datetimeBox" style="display:none;">
+
+Date<br> 
+<input type="date" id="date"><br>
+
+Time<br> 
+<input type="time" id="time"><br>
+
+</div>
+
+<br>
+<button type="submit">Confirm Booking</button>
+
+</form>
+
+<script>
+
+let tables=[];
+let selected="";
+
+// CREATE TABLES
+function loadTables(){
+
+let container=document.getElementById("tables");
+
+for(let i=1;i<=30;i++){
+
+let seats;
+
+if(i%4==1) seats=2;
+else if(i%4==2) seats=4;
+else if(i%4==3) seats=6;
+else seats=10;
+
+let t="T"+i;
+
+tables.push({id:t,seats:seats,booked:false});
+
+let div=document.createElement("div");
+
+div.classList.add("table");
+div.id=t;
+div.innerHTML=t+"<br>"+seats+" seats";
+
+div.style.display="none";
+
+container.appendChild(div);
+}
+}
+
+
+// 🔴 FETCH BOOKED TABLES (FIXED)
+function markBookedTables(){
+
+fetch("/HotelTableReservation/ViewBookingsServlet")
+.then(res=>res.json())
+.then(data=>{
+
+data.forEach(b=>{
+
+// ✅ FIX: table (NOT table_no)
+let tableObj=tables.find(t=>t.id===b.table);
+
+if(tableObj){
+
+tableObj.booked=true;
+
+let el=document.getElementById(tableObj.id);
+
+el.classList.add("booked");
+el.onclick=null;
+}
+});
+
+});
+}
+
+
+// FILTER TABLES
+function filterTables(){
+
+let guest=parseInt(document.getElementById("guests").value);
+
+// hide all
+tables.forEach(t=>{
+document.getElementById(t.id).style.display="none";
+});
+
+// available
+let available=tables.filter(t=>!t.booked && t.seats>=guest);
+
+// best fit
+available.sort((a,b)=>a.seats-b.seats);
+
+let bestSize=available.length?available[0].seats:null;
+
+// show only best
+available.forEach(t=>{
+
+if(t.seats===bestSize){
+
+let el=document.getElementById(t.id);
+
+el.style.display="block";
+
+el.onclick=()=>selectTable(t.id);
+}
+});
+}
+
+
+// SELECT TABLE
+function selectTable(t){
+
+selected=t;
+document.getElementById("tableInput").value=t;
+
+document.querySelectorAll(".table").forEach(el=>{
+el.classList.remove("selected");
+});
+
+document.getElementById(t).classList.add("selected");
+
+document.getElementById("datetimeBox").style.display="block";
+}
+
+
+// 🔥 FINAL SUBMIT (IMPORTANT FIX)
+function submitForm(e){
+
+e.preventDefault();
+
+let name=document.getElementById("name").value;
+let guests=document.getElementById("guests").value;
+let date=document.getElementById("date").value;
+let time=document.getElementById("time").value;
+let table=document.getElementById("tableInput").value;
+
+if(!name || !guests){
+alert("Enter name & guests");
+return;
+}
+
+if(!table){
+alert("Select table");
+return;
+}
+
+if(!date || !time){
+alert("Select date & time");
+return;
+}
+
+// 🔥 SEND TO SERVLET
+fetch("/HotelTableReservation/BookTableServlet",{
+method:"POST",
+headers:{
+"Content-Type":"application/x-www-form-urlencoded"
+},
+body:`name=${name}&guests=${guests}&date=${date}&time=${time}&table=${table}`
+})
+.then(res=>res.text())
+.then(data=>{
+
+if(data==="BOOKED"){
+alert("❌ Table already booked! Choose another one");
+return;
+}
+
+if(data==="SUCCESS"){
+alert("✅ Booking Successful");
+window.location.href="booking.html?table="+table;
+}
+
+})
+.catch(()=>{
+alert("Server Error ❌");
+});
+
+}
+
+
+// INIT
+loadTables();
+markBookedTables();
+
+</script>
+
+</body>
+</html>
